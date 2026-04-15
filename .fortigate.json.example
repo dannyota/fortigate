@@ -1,0 +1,8 @@
+{
+  "address": "https://replace-me.replace-me:443",
+  "username": "replace-me",
+  "password": "replace-me",
+  "vdom": "",
+  "insecure_tls": true,
+  "x509_negative_serial": false
+}
