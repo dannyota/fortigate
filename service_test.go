@@ -107,3 +107,33 @@ func TestListServiceGroups(t *testing.T) {
 		}
 	})
 }
+
+func TestListServiceCategories(t *testing.T) {
+	t.Run("not logged in", func(t *testing.T) {
+		c, _ := NewClient("https://example.com", WithCredentials("u", "p"))
+		_, err := c.ListServiceCategories(context.Background(), "root")
+		if err != ErrNotLoggedIn {
+			t.Errorf("err = %v, want ErrNotLoggedIn", err)
+		}
+	})
+
+	t.Run("success", func(t *testing.T) {
+		client := newTestClient(t, map[string]string{
+			"/api/v2/cmdb/firewall.service/category": `[
+				{"name": "Web Access", "comment": "Web services"},
+				{"name": "Network Services", "comment": ""}
+			]`,
+		})
+
+		cats, err := client.ListServiceCategories(context.Background(), "root")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(cats) != 2 {
+			t.Fatalf("len = %d, want 2", len(cats))
+		}
+		if cats[0].Name != "Web Access" || cats[0].Comment != "Web services" {
+			t.Errorf("category = %+v", cats[0])
+		}
+	})
+}

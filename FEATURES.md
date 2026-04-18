@@ -45,13 +45,62 @@ normalized to CIDR at the SDK boundary.
 |---|---|---|
 | `ListAddresses` | `firewall/address` | `Address` |
 | `ListAddressGroups` | `firewall/addrgrp` | `AddressGroup` |
+| `ListIPv6Addresses` | `firewall/address6` | `IPv6Address` |
+| `ListIPv6AddressGroups` | `firewall/addrgrp6` | `IPv6AddressGroup` |
 | `ListPolicies` | `firewall/policy` | `Policy` |
 | `ListInterfaces` | `system/interface` | `Interface` |
+| `ListZones` | `system/zone` | `Zone` |
+| `GetDNSSettings` | `system/dns` | `DNSSettings` |
+| `ListDNSServers` | `system/dns-server` | `DNSServer` |
+| `ListDHCPServers` | `system.dhcp/server` | `DHCPServer` |
+| `ListDHCPv6Servers` | `system.dhcp6/server` | `DHCPv6Server` |
+| `GetSDWANSettings` | `system/sdwan` | `SDWANSettings` |
+| `ListSDWANMembers` | `system/sdwan/members` | `SDWANMember` |
+| `ListSDWANZones` | `system/sdwan/zone` | `SDWANZone` |
 | `ListStaticRoutes` | `router/static` | `StaticRoute` |
+| `ListIPv6StaticRoutes` | `router/static6` | `IPv6StaticRoute` |
+| `ListPolicyRoutes` | `router/policy` | `PolicyRoute` |
+| `ListIPv6PolicyRoutes` | `router/policy6` | `IPv6PolicyRoute` |
+| `ListRouteMaps` | `router/route-map` | `RouteMap` |
+| `ListAccessLists` | `router/access-list` | `AccessList` |
+| `ListIPv6AccessLists` | `router/access-list6` | `IPv6AccessList` |
+| `ListPrefixLists` | `router/prefix-list` | `PrefixList` |
+| `ListIPv6PrefixLists` | `router/prefix-list6` | `IPv6PrefixList` |
+| `ListASPathLists` | `router/aspath-list` | `ASPathList` |
+| `ListCommunityLists` | `router/community-list` | `CommunityList` |
+| `GetBGPSettings` | `router/bgp` | `BGPSettings` |
+| `GetOSPFSettings` | `router/ospf` | `OSPFSettings` |
+| `GetOSPFv6Settings` | `router/ospf6` | `OSPFv6Settings` |
+| `ListIPsecPhase1s` | `vpn.ipsec/phase1-interface` | `IPsecPhase1` |
+| `ListIPsecPhase2s` | `vpn.ipsec/phase2-interface` | `IPsecPhase2` |
+| `ListSSLVPNPortals` | `vpn.ssl.web/portal` | `SSLVPNPortal` |
+| `GetSSLVPNSettings` | `vpn.ssl/settings` | `SSLVPNSettings` |
+| `ListLocalUsers` | `user/local` | `LocalUser` |
+| `ListUserGroups` | `user/group` | `UserGroup` |
+| `ListLDAPServers` | `user/ldap` | `RemoteAuthServer` |
+| `ListRadiusServers` | `user/radius` | `RemoteAuthServer` |
+| `ListTACACSServers` | `user/tacacs+` | `RemoteAuthServer` |
+| `ListLocalCertificates` | `vpn.certificate/local` | `LocalCertificate` |
+| `ListCACertificates` | `vpn.certificate/ca` | `CACertificate` |
+| `ListCRLCertificates` | `vpn.certificate/crl` | `CRLCertificate` |
+| `ListRemoteCertificates` | `vpn.certificate/remote` | `RemoteCertificate` |
+| `GetSystemStatus` | `monitor/system/status` | `SystemStatus` |
+| `ListMonitorPolicyStats` | `monitor/firewall/policy` | `MonitorPolicyStats` |
+| `ListMonitorRoutes` | `monitor/router/ipv4` | `MonitorRoute` |
+| `ListMonitorIPsecTunnels` | `monitor/vpn/ipsec` | `MonitorIPsecTunnel` |
+| `ListMonitorSSLTunnels` | `monitor/vpn/ssl` | `MonitorSSLTunnel` |
 | `ListServices` | `firewall.service/custom` | `Service` |
 | `ListServiceGroups` | `firewall.service/group` | `ServiceGroup` |
+| `ListServiceCategories` | `firewall.service/category` | `ServiceCategory` |
+| `ListRecurringSchedules` | `firewall.schedule/recurring` | `RecurringSchedule` |
+| `ListOneTimeSchedules` | `firewall.schedule/onetime` | `OneTimeSchedule` |
+| `ListScheduleGroups` | `firewall.schedule/group` | `ScheduleGroup` |
 | `ListVirtualIPs` | `firewall/vip` | `VirtualIP` |
+| `ListIPv6VirtualIPs` | `firewall/vip6` | `IPv6VirtualIP` |
+| `ListVirtualIPGroups` | `firewall/vipgrp` | `VirtualIPGroup` |
+| `ListIPv6VirtualIPGroups` | `firewall/vipgrp6` | `IPv6VirtualIPGroup` |
 | `ListIPPools` | `firewall/ippool` | `IPPool` |
+| `ListIPv6IPPools` | `firewall/ippool6` | `IPv6IPPool` |
 | `ListVDOMs` | `system/vdom` | `VDOM` |
 | `GetSystemInfo` | `system/global` | `SystemInfo` |
 
@@ -69,6 +118,12 @@ normalized to CIDR at the SDK boundary.
   since the API returns them as `[{range: "..."}]` objects.
 - `splitAllowAccess` — parses the space-separated interface
   `allowaccess` string into `[]string`.
+- Sensitive config material returned by FortiGate, such as shared secrets,
+  passwords, private keys, and certificate bodies, is intentionally omitted
+  from public SDK models. Ignored raw captures can be used for local
+  comparison when needed.
+- Recurring schedule `day` values are accepted as either FortiGate's
+  space-separated string form or a JSON string array and returned as `[]string`.
 - Static route `Dst` is converted from `"192.0.2.0 255.255.255.0"` to CIDR.
 - `SystemInfo.Timezone` is intentionally a `string` — FortiGate returns
   `"53"`, not an integer.

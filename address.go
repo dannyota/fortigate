@@ -23,6 +23,25 @@ type apiAddressGroup struct {
 	Color   int         `json:"color"`
 }
 
+type apiIPv6Address struct {
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+	IP6     string `json:"ip6"`
+	StartIP string `json:"start-ip"`
+	EndIP   string `json:"end-ip"`
+	FQDN    string `json:"fqdn"`
+	Country string `json:"country"`
+	Comment string `json:"comment"`
+	Color   int    `json:"color"`
+}
+
+type apiIPv6AddressGroup struct {
+	Name    string      `json:"name"`
+	Member  []namedItem `json:"member"`
+	Comment string      `json:"comment"`
+	Color   int         `json:"color"`
+}
+
 // ListAddresses retrieves firewall address objects from a VDOM.
 //
 // Pagination is handled transparently; use WithPageSize and WithPageCallback
@@ -71,6 +90,49 @@ func (c *Client) ListAddressGroups(ctx context.Context, vdom string, opts ...Lis
 	groups := make([]AddressGroup, len(items))
 	for i, g := range items {
 		groups[i] = AddressGroup{
+			Name:    g.Name,
+			Members: namesOf(g.Member),
+			Comment: g.Comment,
+			Color:   g.Color,
+		}
+	}
+
+	return groups, nil
+}
+
+// ListIPv6Addresses retrieves IPv6 firewall address objects from a VDOM.
+func (c *Client) ListIPv6Addresses(ctx context.Context, vdom string, opts ...ListOption) ([]IPv6Address, error) {
+	if err := c.requireVDOM(vdom); err != nil {
+		return nil, err
+	}
+	items, err := getPaged[apiIPv6Address](ctx, c, "/api/v2/cmdb/firewall/address6",
+		vdomParams(vdom), buildListConfig(opts))
+	if err != nil {
+		return nil, err
+	}
+
+	addresses := make([]IPv6Address, len(items))
+	for i, a := range items {
+		addresses[i] = IPv6Address(a)
+	}
+
+	return addresses, nil
+}
+
+// ListIPv6AddressGroups retrieves IPv6 firewall address groups from a VDOM.
+func (c *Client) ListIPv6AddressGroups(ctx context.Context, vdom string, opts ...ListOption) ([]IPv6AddressGroup, error) {
+	if err := c.requireVDOM(vdom); err != nil {
+		return nil, err
+	}
+	items, err := getPaged[apiIPv6AddressGroup](ctx, c, "/api/v2/cmdb/firewall/addrgrp6",
+		vdomParams(vdom), buildListConfig(opts))
+	if err != nil {
+		return nil, err
+	}
+
+	groups := make([]IPv6AddressGroup, len(items))
+	for i, g := range items {
+		groups[i] = IPv6AddressGroup{
 			Name:    g.Name,
 			Members: namesOf(g.Member),
 			Comment: g.Comment,

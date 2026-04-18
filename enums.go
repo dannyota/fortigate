@@ -8,14 +8,14 @@ package fortigate
 
 // Address types (firewall/address).
 const (
-	AddressTypeIPMask      = "ipmask"
-	AddressTypeIPRange     = "iprange"
-	AddressTypeFQDN        = "fqdn"
-	AddressTypeWildcard    = "wildcard"
-	AddressTypeGeography   = "geography"
+	AddressTypeIPMask       = "ipmask"
+	AddressTypeIPRange      = "iprange"
+	AddressTypeFQDN         = "fqdn"
+	AddressTypeWildcard     = "wildcard"
+	AddressTypeGeography    = "geography"
 	AddressTypeWildcardFQDN = "wildcard-fqdn"
-	AddressTypeDynamic     = "dynamic"
-	AddressTypeMAC         = "mac"
+	AddressTypeDynamic      = "dynamic"
+	AddressTypeMAC          = "mac"
 )
 
 // Policy actions (firewall/policy).

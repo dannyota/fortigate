@@ -22,7 +22,7 @@ type Client struct {
 }
 
 // NewClient creates a new FortiGate client.
-// address is the base URL (e.g. "https://192.168.1.1").
+// address is the base URL (e.g. "https://192.0.2.1").
 // At minimum, WithCredentials must be provided.
 //
 // HTTP client precedence: WithHTTPClient > WithTransport > default.
@@ -90,7 +90,7 @@ func (c *Client) Login(ctx context.Context) error {
 		}
 		return fmt.Errorf("fortigate: login request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// ccsrftoken is set by FortiGate on successful login.
 	// Its value is wrapped in quotes: "abc123". Strip them before storing.
@@ -136,7 +136,9 @@ func (c *Client) Logout(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("fortigate: logout request: %w", err)
 	}
-	resp.Body.Close()
+	if err := resp.Body.Close(); err != nil {
+		return fmt.Errorf("fortigate: close logout response: %w", err)
+	}
 
 	return nil
 }
@@ -182,7 +184,7 @@ func setX509NegativeSerial() {
 		if current != "" {
 			current += ","
 		}
-		os.Setenv("GODEBUG", current+"x509negativeserial=1")
+		_ = os.Setenv("GODEBUG", current+"x509negativeserial=1")
 	})
 }
 
@@ -192,7 +194,7 @@ func validName(name string) bool {
 		return false
 	}
 	for _, r := range name {
-		if !(r >= 'a' && r <= 'z') && !(r >= 'A' && r <= 'Z') && !(r >= '0' && r <= '9') && r != '-' && r != '_' && r != '.' {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r < '0' || r > '9') && r != '-' && r != '_' && r != '.' {
 			return false
 		}
 	}

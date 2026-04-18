@@ -26,10 +26,7 @@ func (c *Client) ListVDOMs(ctx context.Context, opts ...ListOption) ([]VDOM, err
 
 	vdoms := make([]VDOM, len(items))
 	for i, v := range items {
-		vdoms[i] = VDOM{
-			Name:   v.Name,
-			OpMode: v.OpMode,
-		}
+		vdoms[i] = VDOM(v)
 	}
 
 	return vdoms, nil

@@ -18,6 +18,11 @@ type apiServiceGroup struct {
 	Color   int         `json:"color"`
 }
 
+type apiServiceCategory struct {
+	Name    string `json:"name"`
+	Comment string `json:"comment"`
+}
+
 // ListServices retrieves custom firewall service objects from a VDOM.
 //
 // Pagination is handled transparently.
@@ -33,14 +38,7 @@ func (c *Client) ListServices(ctx context.Context, vdom string, opts ...ListOpti
 
 	services := make([]Service, len(items))
 	for i, s := range items {
-		services[i] = Service{
-			Name:         s.Name,
-			Protocol:     s.Protocol,
-			TCPPortRange: s.TCPPortRange,
-			UDPPortRange: s.UDPPortRange,
-			Comment:      s.Comment,
-			Color:        s.Color,
-		}
+		services[i] = Service(s)
 	}
 
 	return services, nil
@@ -70,4 +68,23 @@ func (c *Client) ListServiceGroups(ctx context.Context, vdom string, opts ...Lis
 	}
 
 	return groups, nil
+}
+
+// ListServiceCategories retrieves firewall service categories from a VDOM.
+func (c *Client) ListServiceCategories(ctx context.Context, vdom string, opts ...ListOption) ([]ServiceCategory, error) {
+	if err := c.requireVDOM(vdom); err != nil {
+		return nil, err
+	}
+	items, err := getPaged[apiServiceCategory](ctx, c, "/api/v2/cmdb/firewall.service/category",
+		vdomParams(vdom), buildListConfig(opts))
+	if err != nil {
+		return nil, err
+	}
+
+	categories := make([]ServiceCategory, len(items))
+	for i, cat := range items {
+		categories[i] = ServiceCategory(cat)
+	}
+
+	return categories, nil
 }

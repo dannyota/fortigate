@@ -22,10 +22,5 @@ func (c *Client) GetSystemInfo(ctx context.Context) (SystemInfo, error) {
 		return SystemInfo{}, err
 	}
 
-	return SystemInfo{
-		Hostname:   item.Hostname,
-		Timezone:   item.Timezone,
-		AdminSport: item.AdminSport,
-		AdminPort:  item.AdminPort,
-	}, nil
+	return SystemInfo(item), nil
 }

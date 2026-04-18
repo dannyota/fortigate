@@ -39,7 +39,7 @@ func newTestServer(t *testing.T, fixtures map[string]string) *testServer {
 			Path:  "/",
 		})
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`1document.location="/";`))
+		_, _ = w.Write([]byte(`1document.location="/";`))
 	})
 
 	// Logout.
@@ -54,7 +54,7 @@ func newTestServer(t *testing.T, fixtures map[string]string) *testServer {
 		// CSRF token must be present on every API request.
 		if r.Header.Get("X-CSRFTOKEN") != testCSRFToken {
 			w.WriteHeader(http.StatusForbidden)
-			fmt.Fprint(w, `{"http_status":403,"status":"error","message":"missing or invalid X-CSRFTOKEN"}`)
+			_, _ = fmt.Fprint(w, `{"http_status":403,"status":"error","message":"missing or invalid X-CSRFTOKEN"}`)
 			return
 		}
 
@@ -64,20 +64,20 @@ func newTestServer(t *testing.T, fixtures map[string]string) *testServer {
 		if ts.expireOnce.Load() {
 			ts.expireOnce.Store(false)
 			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprint(w, `{"http_status":401,"status":"error","message":"session expired"}`)
+			_, _ = fmt.Fprint(w, `{"http_status":401,"status":"error","message":"session expired"}`)
 			return
 		}
 		if n := ts.expireAfter.Load(); n > 0 && ts.apiCalls.Load() == n+1 {
 			ts.expireAfter.Store(0)
 			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprint(w, `{"http_status":401,"status":"error","message":"session expired"}`)
+			_, _ = fmt.Fprint(w, `{"http_status":401,"status":"error","message":"session expired"}`)
 			return
 		}
 
 		path := r.URL.Path
 		data, ok := fixtures[path]
 		if !ok {
-			fmt.Fprintf(w, `{"http_status":404,"status":"error","message":"unknown path: %s"}`, path)
+			_, _ = fmt.Fprintf(w, `{"http_status":404,"status":"error","message":"unknown path: %s"}`, path)
 			return
 		}
 
@@ -90,11 +90,11 @@ func newTestServer(t *testing.T, fixtures map[string]string) *testServer {
 			}
 		}
 
-		fmt.Fprintf(w, `{"http_status":200,"status":"success","results":%s}`, data)
+		_, _ = fmt.Fprintf(w, `{"http_status":200,"status":"success","results":%s}`, data)
 	})
 
 	ts.Server = httptest.NewServer(mux)
-	t.Cleanup(ts.Server.Close)
+	t.Cleanup(ts.Close)
 	return ts
 }
 

@@ -71,3 +71,39 @@ func TestListIPPools(t *testing.T) {
 		}
 	})
 }
+
+func TestListIPv6IPPools(t *testing.T) {
+	t.Run("not logged in", func(t *testing.T) {
+		c, _ := NewClient("https://example.com", WithCredentials("u", "p"))
+		_, err := c.ListIPv6IPPools(context.Background(), "root")
+		if err != ErrNotLoggedIn {
+			t.Errorf("err = %v, want ErrNotLoggedIn", err)
+		}
+	})
+
+	t.Run("success", func(t *testing.T) {
+		client := newTestClient(t, map[string]string{
+			"/api/v2/cmdb/firewall/ippool6": `[
+				{
+					"name": "v6-nat-pool",
+					"type": "overload",
+					"startip": "2001:db8::100",
+					"endip": "2001:db8::1ff",
+					"comments": "IPv6 NAT pool",
+					"color": 5
+				}
+			]`,
+		})
+
+		pools, err := client.ListIPv6IPPools(context.Background(), "root")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(pools) != 1 {
+			t.Fatalf("len = %d, want 1", len(pools))
+		}
+		if pools[0].Name != "v6-nat-pool" || pools[0].StartIP != "2001:db8::100" || pools[0].Comment != "IPv6 NAT pool" {
+			t.Errorf("pool = %+v", pools[0])
+		}
+	})
+}

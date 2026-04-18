@@ -206,3 +206,72 @@ func TestListAddressGroups(t *testing.T) {
 		}
 	})
 }
+
+func TestListIPv6Addresses(t *testing.T) {
+	t.Run("not logged in", func(t *testing.T) {
+		c, _ := NewClient("https://example.com", WithCredentials("u", "p"))
+		_, err := c.ListIPv6Addresses(context.Background(), "root")
+		if err != ErrNotLoggedIn {
+			t.Errorf("err = %v, want ErrNotLoggedIn", err)
+		}
+	})
+
+	t.Run("success", func(t *testing.T) {
+		client := newTestClient(t, map[string]string{
+			"/api/v2/cmdb/firewall/address6": `[
+				{
+					"name": "v6-net",
+					"type": "ipprefix",
+					"ip6": "2001:db8::/64",
+					"comment": "IPv6 network",
+					"color": 4
+				},
+				{
+					"name": "v6-fqdn",
+					"type": "fqdn",
+					"fqdn": "example.net"
+				}
+			]`,
+		})
+
+		addrs, err := client.ListIPv6Addresses(context.Background(), "root")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(addrs) != 2 {
+			t.Fatalf("len = %d, want 2", len(addrs))
+		}
+		if addrs[0].Name != "v6-net" || addrs[0].IP6 != "2001:db8::/64" || addrs[0].Comment != "IPv6 network" {
+			t.Errorf("addr = %+v", addrs[0])
+		}
+		if addrs[1].FQDN != "example.net" {
+			t.Errorf("FQDN = %q", addrs[1].FQDN)
+		}
+	})
+}
+
+func TestListIPv6AddressGroups(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		client := newTestClient(t, map[string]string{
+			"/api/v2/cmdb/firewall/addrgrp6": `[
+				{
+					"name": "v6-group",
+					"member": [{"name": "v6-net"}],
+					"comment": "IPv6 group",
+					"color": 2
+				}
+			]`,
+		})
+
+		groups, err := client.ListIPv6AddressGroups(context.Background(), "root")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(groups) != 1 {
+			t.Fatalf("len = %d, want 1", len(groups))
+		}
+		if groups[0].Name != "v6-group" || len(groups[0].Members) != 1 || groups[0].Members[0] != "v6-net" {
+			t.Errorf("group = %+v", groups[0])
+		}
+	})
+}

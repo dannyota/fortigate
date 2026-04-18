@@ -3,6 +3,7 @@ package fortigate
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,8 +12,8 @@ import (
 )
 
 const (
-	defaultPageSize     = 1000
-	maxPagedIterations  = 10000
+	defaultPageSize    = 1000
+	maxPagedIterations = 10000
 )
 
 // buildListConfig applies ListOptions to a fresh listConfig.
@@ -33,7 +34,7 @@ func buildListConfig(opts []ListOption) listConfig {
 // session has expired. Returns the raw JSON payload from the results field.
 func (c *Client) fetchJSON(ctx context.Context, path string, params url.Values) (json.RawMessage, error) {
 	data, err := c.doGet(ctx, path, params)
-	if err != ErrSessionExpired {
+	if !errors.Is(err, ErrSessionExpired) {
 		return data, err
 	}
 	if loginErr := c.Login(ctx); loginErr != nil {
@@ -69,6 +70,13 @@ func getOne[T any](ctx context.Context, c *Client, path string, params url.Value
 	return item, nil
 }
 
+func getVDOMPaged[T any](ctx context.Context, c *Client, vdom, path string, opts []ListOption) ([]T, error) {
+	if err := c.requireVDOM(vdom); err != nil {
+		return nil, err
+	}
+	return getPaged[T](ctx, c, path, vdomParams(vdom), buildListConfig(opts))
+}
+
 // doGet performs a single GET request to the REST API without retry.
 func (c *Client) doGet(ctx context.Context, path string, params url.Values) (json.RawMessage, error) {
 	fullURL := c.address + path
@@ -93,7 +101,7 @@ func (c *Client) doGet(ctx context.Context, path string, params url.Values) (jso
 		}
 		return nil, fmt.Errorf("fortigate: send request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
