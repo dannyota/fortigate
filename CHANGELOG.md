@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.2.1
+
+Repository hygiene release.
+
+### Added
+
+- MIT license file for GitHub and Go documentation license detection.
+- README with install, quick start, supported resources, testing, and known
+  issues.
+- Documentation under `docs/` for architecture, feature coverage, and roadmap.
+- Top-level `FEATURES.md` compatibility pointer to `docs/FEATURES.md`.
+
 ## v0.2.0
 
 Expanded read-only FortiGate inventory coverage. All additions are
