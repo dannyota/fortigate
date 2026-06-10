@@ -57,8 +57,12 @@ type Policy struct {
 	Status     string // "enable", "disable"
 	LogTraffic string // "disable", "utm", "all"
 	NATEnabled bool
-	Schedule   string
-	Comment    string
+	Schedule               string
+	Comment                string
+	InternetService        string
+	InternetServiceName    []string
+	InternetServiceSrc     string
+	InternetServiceSrcName []string
 }
 
 // Interface represents a FortiGate network interface.
