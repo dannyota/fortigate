@@ -9,6 +9,8 @@ type apiPolicy struct {
 	DstIntf                []namedItem `json:"dstintf"`
 	SrcAddr                []namedItem `json:"srcaddr"`
 	DstAddr                []namedItem `json:"dstaddr"`
+	SrcAddr6               []namedItem `json:"srcaddr6"`
+	DstAddr6               []namedItem `json:"dstaddr6"`
 	Service                []namedItem `json:"service"`
 	Action                 string      `json:"action"`
 	Status                 string      `json:"status"`
@@ -44,6 +46,8 @@ func (c *Client) ListPolicies(ctx context.Context, vdom string, opts ...ListOpti
 			DstIntfs:               namesOf(p.DstIntf),
 			SrcAddrs:               namesOf(p.SrcAddr),
 			DstAddrs:               namesOf(p.DstAddr),
+			SrcAddrs6:              namesOf(p.SrcAddr6),
+			DstAddrs6:              namesOf(p.DstAddr6),
 			Services:               namesOf(p.Service),
 			Action:                 p.Action,
 			Status:                 p.Status,

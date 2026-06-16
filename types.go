@@ -52,6 +52,8 @@ type Policy struct {
 	DstIntfs   []string
 	SrcAddrs   []string
 	DstAddrs   []string
+	SrcAddrs6  []string // IPv6 source address refs (srcaddr6)
+	DstAddrs6  []string // IPv6 destination address refs (dstaddr6)
 	Services   []string
 	Action     string // "accept", "deny", "ipsec"
 	Status     string // "enable", "disable"

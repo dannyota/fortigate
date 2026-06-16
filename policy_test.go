@@ -24,6 +24,8 @@ func TestListPolicies(t *testing.T) {
 					"dstintf": [{"name": "wan1"}, {"name": "wan2"}],
 					"srcaddr": [{"name": "all"}],
 					"dstaddr": [{"name": "all"}],
+					"srcaddr6": [{"name": "all"}],
+					"dstaddr6": [{"name": "lan-v6"}, {"name": "dmz-v6"}],
 					"service": [{"name": "ALL"}],
 					"action": "accept",
 					"status": "enable",
@@ -83,6 +85,12 @@ func TestListPolicies(t *testing.T) {
 		if p.Comment != "default outbound" {
 			t.Errorf("Comment = %q", p.Comment)
 		}
+		if len(p.SrcAddrs6) != 1 || p.SrcAddrs6[0] != "all" {
+			t.Errorf("SrcAddrs6 = %v, want [all]", p.SrcAddrs6)
+		}
+		if len(p.DstAddrs6) != 2 || p.DstAddrs6[0] != "lan-v6" || p.DstAddrs6[1] != "dmz-v6" {
+			t.Errorf("DstAddrs6 = %v, want [lan-v6 dmz-v6]", p.DstAddrs6)
+		}
 
 		p2 := policies[1]
 		if p2.Action != "deny" {
@@ -90,6 +98,9 @@ func TestListPolicies(t *testing.T) {
 		}
 		if p2.NATEnabled {
 			t.Error("NATEnabled = true, want false")
+		}
+		if len(p2.SrcAddrs6) != 0 || len(p2.DstAddrs6) != 0 {
+			t.Errorf("v6 addrs = %v/%v, want empty (no srcaddr6/dstaddr6 in fixture)", p2.SrcAddrs6, p2.DstAddrs6)
 		}
 	})
 }
