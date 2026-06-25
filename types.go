@@ -46,19 +46,19 @@ type IPv6AddressGroup struct {
 
 // Policy represents a FortiGate firewall policy.
 type Policy struct {
-	ID         int
-	Name       string
-	SrcIntfs   []string
-	DstIntfs   []string
-	SrcAddrs   []string
-	DstAddrs   []string
-	SrcAddrs6  []string // IPv6 source address refs (srcaddr6)
-	DstAddrs6  []string // IPv6 destination address refs (dstaddr6)
-	Services   []string
-	Action     string // "accept", "deny", "ipsec"
-	Status     string // "enable", "disable"
-	LogTraffic string // "disable", "utm", "all"
-	NATEnabled bool
+	ID                     int
+	Name                   string
+	SrcIntfs               []string
+	DstIntfs               []string
+	SrcAddrs               []string
+	DstAddrs               []string
+	SrcAddrs6              []string // IPv6 source address refs (srcaddr6)
+	DstAddrs6              []string // IPv6 destination address refs (dstaddr6)
+	Services               []string
+	Action                 string // "accept", "deny", "ipsec"
+	Status                 string // "enable", "disable"
+	LogTraffic             string // "disable", "utm", "all"
+	NATEnabled             bool
 	Schedule               string
 	Comment                string
 	InternetService        string
@@ -811,4 +811,29 @@ type SystemInfo struct {
 	Timezone   string // timezone index string as returned by FortiGate, e.g. "53"
 	AdminSport int
 	AdminPort  int
+}
+
+// SSOAdmin is a FortiCloud SSO administrator account (system/sso-admin). Any
+// entry means FortiCloud SSO admin login is configured on the device.
+type SSOAdmin struct {
+	Name       string
+	Accprofile string
+	Vdoms      []string
+}
+
+// CentralManagement is the device's central-management configuration
+// (system/central-management).
+type CentralManagement struct {
+	Mode                   string
+	Type                   string // "fortimanager", "fortiguard", or "none"
+	IncludeDefaultServers  string
+	FmgSourceIP            string
+	CloudSSODefaultProfile string
+	ServerList             []string
+}
+
+// FortiGuard holds the SSO/FortiCloud-linkage fields of system/fortiguard.
+type FortiGuard struct {
+	AutoJoinForticloud string // "enable" / "disable"
+	ServiceAccountID   string
 }
